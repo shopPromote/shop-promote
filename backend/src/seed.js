@@ -1,0 +1,15 @@
+import "dotenv/config";
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
+import User from "./models/User.js";
+import Shop from "./models/Shop.js";
+import Influencer from "./models/Influencer.js";
+await mongoose.connect(process.env.MONGO_URI);
+await Promise.all([User.deleteMany({}),Shop.deleteMany({}),Influencer.deleteMany({})]);
+const password=await bcrypt.hash("Password123!",12);
+const owner=await User.create({name:"Urban Cafe Owner",email:"owner@example.com",password,role:"owner"});
+const iu=await User.create({name:"Priya Sharma",email:"influencer@example.com",password,role:"influencer"});
+await User.create({name:"Platform Admin",email:"admin@example.com",password,role:"admin"});
+await Shop.create({owner:owner._id,name:"Urban Bites Cafe",category:"Food & Beverages",description:"A cozy local cafe looking for creators to showcase coffee, snacks and new menu launches.",city:"Bengaluru",address:"12 MG Road",rating:4.8,reviewCount:120,images:["https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1200&q=80"]});
+await Influencer.create({user:iu._id,bio:"Lifestyle, food and city experiences creator.",niche:"Lifestyle & Food",city:"Bengaluru",followers:245000,engagementRate:4.8,rating:4.9,reviewCount:58,platforms:[{name:"Instagram",handle:"@priyasharma",followers:180000},{name:"YouTube",handle:"Priya Sharma",followers:65000}],rates:{instagramPost:5000,instagramReel:8000,youtubeVideo:15000}});
+console.log("Seed complete");await mongoose.disconnect();
